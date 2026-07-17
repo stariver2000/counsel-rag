@@ -4,9 +4,9 @@ categories:
   self_harm:
     headline: 자해·자살 관련 신호가 감지되었습니다. 아래 전문기관에 즉시 연락하세요.
     hotlines:
-      - "자살예방 상담전화 1393 (24시간)"
+      - "자살·정신건강 위기상담전화 109 (24시간)"
       - "청소년 전화 1388"
-    guide_slug: crisis-self-harm
+    guide_slug: crisis-selfharm-signs  # 실지식 slug. knowledge-sample 모드에선 대응 문서 없음(형식 예시 한계)
     patterns:
       - 죽고 싶
       - 죽어버리

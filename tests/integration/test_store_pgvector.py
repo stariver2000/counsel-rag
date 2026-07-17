@@ -62,8 +62,8 @@ def test_target_filter_includes_common(indexed):
 def test_sparse_search_finds_lexical_match(indexed):
     store, embedder = indexed
     # fake sparse는 단어 빈도 — 본문에 실제로 있는 단어로 질의한다
-    emb = embedder.embed(["1393"])[0]
-    q = SearchQuery(text="1393", dense=emb.dense, sparse=emb.sparse)
+    emb = embedder.embed(["109"])[0]
+    q = SearchQuery(text="109", dense=emb.dense, sparse=emb.sparse)
     hits = store.sparse_search(q, top_n=5)
     assert hits[0].document_slug == "crisis-self-harm"
     assert hits[0].ranks == {"sparse": 0}

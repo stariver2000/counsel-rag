@@ -21,7 +21,7 @@ class StubSearch:
         if "자해" in text:
             crisis = CrisisAlert(
                 category="self_harm", headline="위기 안내",
-                hotlines=["1393"], guide_slug="crisis-self-harm",
+                hotlines=["109"], guide_slug="crisis-self-harm",
             )
         return SearchResponse(chunks=[chunk], crisis=crisis, insufficient=False)
 
@@ -52,7 +52,7 @@ class StubScanner:
         if category != "self_harm":
             return None
         return {"category": "self_harm", "headline": "위기 안내",
-                "hotlines": ["1393"], "guide_slug": "crisis-self-harm"}
+                "hotlines": ["109"], "guide_slug": "crisis-self-harm"}
 
 
 def make_client(**settings_kwargs) -> TestClient:
@@ -79,7 +79,7 @@ def test_search_contract():
 def test_search_crisis_alert_present():
     client = make_client()
     res = client.post("/v1/search", json={"query": "아이가 자해를 해요"})
-    assert res.json()["crisis_alert"]["hotlines"] == ["1393"]
+    assert res.json()["crisis_alert"]["hotlines"] == ["109"]
 
 
 def test_situation_search():

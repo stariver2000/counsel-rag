@@ -12,8 +12,8 @@ def test_detects_direct_self_harm():
     alert = scanner.scan("아이가 죽고 싶다고 말했어요")
     assert alert is not None
     assert alert.category == "self_harm"
-    assert any("1393" in h for h in alert.hotlines)
-    assert alert.guide_slug == "crisis-self-harm"
+    assert any("109" in h for h in alert.hotlines)
+    assert alert.guide_slug == "crisis-selfharm-signs"
 
 
 def test_detects_abuse():
@@ -81,8 +81,8 @@ def test_guide_returns_category_info():
     guide = scanner.guide("self_harm")
     assert guide is not None
     assert guide["category"] == "self_harm"
-    assert guide["guide_slug"] == "crisis-self-harm"
-    assert any("1393" in h for h in guide["hotlines"])
+    assert guide["guide_slug"] == "crisis-selfharm-signs"
+    assert any("109" in h for h in guide["hotlines"])
 
 
 def test_guide_returns_none_for_unknown_category():

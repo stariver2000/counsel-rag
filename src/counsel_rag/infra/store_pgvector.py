@@ -223,7 +223,7 @@ class PgVectorStore:
             FROM edges e
             JOIN documents s ON s.id = e.src_doc_id
             JOIN documents d ON d.id = e.dst_doc_id
-            WHERE s.slug = %s AND d.reviewed
+            WHERE s.slug = %s AND s.reviewed AND d.reviewed
         """
         with self._connect() as conn:
             rows = conn.execute(sql, (slug,)).fetchall()

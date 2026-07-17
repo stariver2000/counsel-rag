@@ -100,3 +100,21 @@ def test_logs_do_not_crash(indexed):
     q = SearchQuery(text="테스트", dense=emb.dense, sparse=emb.sparse)
     store.log_query(q, [])
     store.log_crisis_event("self_harm")
+
+
+def test_related_hidden_for_unreviewed_source(indexed):
+    # 왜: "reviewed=true만 노출" 원칙은 연관관계 조회에도 적용된다 —
+    #     미검수 문서를 slug로 찔러 관계 메타데이터가 새는 것을 막는다.
+    store, embedder = indexed
+    docs = load_knowledge_dir(Path("knowledge-sample"))
+    draft = None
+    for doc in docs:
+        if doc.slug == "boy-not-listening":
+            draft = doc
+    draft.reviewed = False
+    chunk_texts = []
+    for section in draft.sections:
+        chunk_texts.append(make_chunk_text(draft, section))
+    store.upsert_document(draft, chunk_texts, embedder.embed(chunk_texts))
+    store.upsert_edges(docs)
+    assert store.get_related("boy-not-listening") == []

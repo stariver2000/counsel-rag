@@ -54,6 +54,11 @@ def test_missing_patterns_file_fails_closed(tmp_path):
         CrisisScanner(tmp_path / "no-such.yaml")
 
 
+def test_detects_adnominal_form():
+    # 왜: 관형형("그은 상처/흔적")은 목격 서술의 흔한 형태다 — 활용형 목록에 포함.
+    assert scanner.scan("손목을 그은 상처가 있어요") is not None
+
+
 def test_no_false_positive_on_benign_wrist_sentences():
     # 왜: 공백 제거 매칭 + 짧은 어간의 조합은 "그네/그렇게/그림"과 충돌했었다.
     # 위기 안내 오탐은 사용자 신뢰를 깎는다 — 무해 문장 회귀 고정.

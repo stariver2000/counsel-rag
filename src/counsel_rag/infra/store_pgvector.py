@@ -8,8 +8,8 @@ import string
 import psycopg
 from pgvector.psycopg import register_vector
 
+from counsel_rag.core.knowledge import TARGET_LABELS, ParsedDoc
 from counsel_rag.core.ports import Embedding, RetrievedChunk, SearchQuery
-from counsel_rag.pipeline.index.loader import TARGET_LABELS, ParsedDoc
 
 # FakeEmbedder는 공백만 나눠 토큰을 만들어 "1393,"처럼 문장부호가 단어에
 # 그대로 붙는다(설계문서 §7 실물 BGE-M3는 서브워드 분리라 이런 문제가 없다).

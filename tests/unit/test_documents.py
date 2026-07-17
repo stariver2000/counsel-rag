@@ -1,8 +1,6 @@
 # 문서 조회 서비스 — store는 스텁, 파일 본문은 knowledge-sample 실물로 검증.
 # 왜: "전문 제공 + 접근 통제" 결정(설계 이력)에 따라 body는 md 파일에서 읽는다.
 #     frontmatter(불투명 소스코드 포함)는 절대 응답에 나가면 안 된다 (설계문서 §5.3).
-from pathlib import Path
-
 from counsel_rag.core.documents import DocumentsService
 
 
@@ -29,9 +27,7 @@ class StubStore:
         return {"boy": 2, "common": 1}
 
 
-svc = DocumentsService(
-    store=StubStore(), knowledge_dir=Path("knowledge-sample"), model_guide="가이드"
-)
+svc = DocumentsService(store=StubStore(), model_guide="가이드")
 
 
 def test_get_document_returns_body_without_frontmatter():

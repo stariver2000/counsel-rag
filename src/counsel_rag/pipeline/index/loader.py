@@ -1,33 +1,16 @@
 # knowledge 문서(md + frontmatter)를 파싱해 섹션 단위 청크로 나누는 로더.
 # 왜: 문서가 원본이고 DB는 재구축 가능한 인덱스(설계문서 §6) — 그 변환의 첫 절반이다.
 #     섹션(## 헤딩)이 곧 청크 단위인 이유는 집필 규칙 §5.2 "섹션 단위 완결" 때문.
-from dataclasses import dataclass
 from pathlib import Path
 
 import frontmatter
 
-TARGET_LABELS = {"boy": "남아", "teen_male": "청소년 남자", "common": "공통"}
-
-
-@dataclass
-class ParsedSection:
-    heading: str
-    text: str
-
-
-@dataclass
-class ParsedDoc:
-    slug: str
-    title: str
-    targets: list[str]
-    category: str
-    age_min: int | None
-    age_max: int | None
-    is_crisis: bool
-    reviewed: bool
-    edges: list[tuple[str, str]]   # (대상 slug, rel_type)
-    file_path: str
-    sections: list[ParsedSection]
+from counsel_rag.core.knowledge import (
+    TARGET_LABELS,
+    ParsedDoc,
+    ParsedSection,
+    split_sections,
+)
 
 
 def load_knowledge_dir(path: Path) -> list[ParsedDoc]:
@@ -69,28 +52,8 @@ def _parse_doc(md_path: Path) -> ParsedDoc:
         reviewed=bool(meta.get("reviewed", False)),
         edges=edges,
         file_path=str(md_path),
-        sections=_split_sections(post.content),
+        sections=split_sections(post.content),
     )
-
-
-def _split_sections(body: str) -> list[ParsedSection]:
-    """본문을 '## ' 헤딩 기준으로 나눈다. 헤딩 이전의 잡문은 버린다."""
-    sections = []
-    current_heading = None
-    current_lines: list[str] = []
-    for line in body.splitlines():
-        if line.startswith("## "):
-            if current_heading is not None:
-                sections.append(
-                    ParsedSection(current_heading, "\n".join(current_lines).strip())
-                )
-            current_heading = line[3:].strip()
-            current_lines = []
-        elif current_heading is not None:
-            current_lines.append(line)
-    if current_heading is not None:
-        sections.append(ParsedSection(current_heading, "\n".join(current_lines).strip()))
-    return sections
 
 
 def make_chunk_text(doc: ParsedDoc, section: ParsedSection) -> str:

@@ -31,8 +31,7 @@ def create_app(
             stages=stages, scanner=crisis_scanner,
         )
         documents_service = DocumentsService(
-            store=store, knowledge_dir=settings.knowledge_dir,
-            model_guide=settings.model_guide,
+            store=store, model_guide=settings.model_guide,
         )
         # CrisisScanner가 guide()를 공개 메서드로 제공하므로 어댑터가 필요 없다
         # (Task 10 리팩터 — 사설 _categories 접근 대신 공개 계약을 쓴다).

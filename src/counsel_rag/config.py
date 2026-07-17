@@ -44,3 +44,7 @@ class Settings(BaseSettings):
         "권장 클라이언트 모델: 최소 4B급(gemma 등) — search/get_document/list_topics 중심. "
         "related_documents·복합 워크플로는 상위 모델 권장."
     )
+
+    # --- corpus 백업 ---
+    backup_dir: Path = Path("/home/counsel/backups/counsel-corpus")
+    backup_keep: int = 5    # 보관 세대 수 — 초과분은 오래된 것부터 삭제

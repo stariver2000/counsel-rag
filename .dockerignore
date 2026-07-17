@@ -1,0 +1,13 @@
+# Docker 빌드 컨텍스트 제외 목록.
+# 왜: Dockerfile의 `COPY . .`가 이것들을 이미지에 구우면
+#     (1) .venv(수 GB)로 빌드가 비대해지고 (2) .env·비공개 지식이 유출된다.
+.venv/
+.git/
+.env
+corpus/
+knowledge/
+__pycache__/
+*.pyc
+.superpowers/
+.pytest_cache/
+.ruff_cache/

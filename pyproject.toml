@@ -13,6 +13,9 @@ dependencies = [
     "pyyaml>=6.0",
     "httpx>=0.27",
     "FlagEmbedding>=1.2",
+    # transformers 5.x는 slow tokenizer의 prepare_for_model을 제거해
+    # FlagEmbedding 리랭커(compute_score)가 깨진다 — 4.x로 고정
+    "transformers<5",
 ]
 
 [dependency-groups]

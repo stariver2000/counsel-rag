@@ -18,6 +18,10 @@ services:
       COUNSEL_DATABASE_URL: postgresql://counsel:counsel@db:5432/counsel
     ports:
       - "8100:8100"
+    volumes:
+      # 호스트의 HuggingFace 캐시 공유 — BGE-M3(2GB+) 재다운로드 방지,
+      # 컨테이너에서 받은 리랭커 모델도 호스트 캐시에 영속된다
+      - ${HF_CACHE:-~/.cache/huggingface}:/root/.cache/huggingface
     profiles: ["serve"]   # 개발 기본(compose up)에서는 db만 뜨게 분리
 volumes:
   pgdata:

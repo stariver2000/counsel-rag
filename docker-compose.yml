@@ -1,0 +1,14 @@
+# 개발·운영 공용 DB. kb-api 서비스는 Task 14에서 추가된다.
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: counsel
+      POSTGRES_PASSWORD: counsel
+      POSTGRES_DB: counsel
+    ports:
+      - "5433:5432"   # 호스트의 다른 postgres와 충돌 방지를 위해 5433 사용
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

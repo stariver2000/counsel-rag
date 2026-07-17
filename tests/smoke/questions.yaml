@@ -1,0 +1,14 @@
+# 스모크 질문 10문 — "검색이 기본적으로 동작하는가"의 회귀 게이트.
+# 본격 품질 평가는 counsel-eval의 몫이다 (설계문서 §11).
+# expect_slug: 상위 결과에 포함돼야 하는 문서 / expect_crisis: 위기 안내 필수 여부
+questions:
+  - {q: "7살 아들이 동생을 때려요",              target: boy, expect_slug: boy-anger-expression, expect_crisis: false}
+  - {q: "아이가 화가 나면 물건을 던져요",         target: boy, expect_slug: boy-anger-expression, expect_crisis: false}
+  - {q: "화를 내는 아이 어떻게 지도하나요",       target: boy, expect_slug: boy-anger-expression, expect_crisis: false}
+  - {q: "아이가 말을 안 들어요",                 target: boy, expect_slug: boy-not-listening,    expect_crisis: false}
+  - {q: "지시를 해도 따르지 않아요",              target: boy, expect_slug: boy-not-listening,    expect_crisis: false}
+  - {q: "엄마 말만 무시해요",                    target: boy, expect_slug: boy-not-listening,    expect_crisis: false}
+  - {q: "아이가 자해를 해서 즉시 도움이 필요해요",  target: boy, expect_slug: crisis-self-harm,     expect_crisis: true}
+  - {q: "아이가 위험한 행동을 하며 죽고 싶다고 말해요", target: boy, expect_slug: crisis-self-harm,  expect_crisis: true}
+  - {q: "아이가 혼자 손목을 긋는 걸 봤어요",       target: boy, expect_slug: crisis-self-harm,     expect_crisis: true}
+  - {q: "아들이 분노를 참지 못하고 소리를 질러요", target: boy, expect_slug: boy-anger-expression, expect_crisis: false}

@@ -14,6 +14,7 @@ age_range: [5, 13]
 is_crisis: false
 sources:
   - {id: src-001, items: ["ch03"]}
+note: 소스가 src-001 하나뿐이다
 reviewed: false
 version: 1
 ---
@@ -52,3 +53,17 @@ def test_real_name_in_body_is_violation(tmp_path, monkeypatch):
     bad = GOOD.replace("내용이 있다.", "홍길동TV에서 말하길 내용이 있다.")
     violations = validate_doc(_write(tmp_path, bad))
     assert any("실명" in v for v in violations)
+
+
+def test_single_source_without_note_is_violation(tmp_path):
+    # 집필 규칙 3: 소스가 1개뿐이면 그 사실을 note로 남겨야 한다 — 없으면 위반.
+    bad = GOOD.replace("note: 소스가 src-001 하나뿐이다\n", "")
+    violations = validate_doc(_write(tmp_path, bad))
+    assert any("note" in v for v in violations)
+
+
+def test_cross_reference_phrase_is_violation(tmp_path):
+    # 집필 규칙 5: "위에서 말했듯" 류 상호참조 금지 — 섹션 단독 반환을 깨뜨린다.
+    bad = GOOD.replace("내용이 있다.", "위에서 말했듯 내용이 있다.")
+    violations = validate_doc(_write(tmp_path, bad))
+    assert any("상호참조" in v for v in violations)

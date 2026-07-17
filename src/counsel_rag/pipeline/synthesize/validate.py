@@ -28,6 +28,10 @@ REQUIRED_FIELDS = [
 ]
 SOURCE_ID_RE = re.compile(r"^src-\d{3}$")
 
+# 집필 규칙 5(PROMPT.md) 위반 어구 — 섹션이 조각으로 단독 반환돼도 성립해야
+# 하는데, 이 어구들은 "다른 섹션을 읽어야 이해된다"는 뜻이라 그 계약을 깬다.
+CROSS_REF_PHRASES = ["위에서 말했듯", "앞서 말했듯", "앞서 언급", "위 섹션", "아래 섹션"]
+
 
 def validate_doc(md_path: Path) -> list[str]:
     """종합 산출물 1개를 검증해 위반 목록을 반환한다. 빈 리스트 = 통과."""
@@ -44,10 +48,17 @@ def validate_doc(md_path: Path) -> list[str]:
             valid = ", ".join(TARGET_LABELS)
             violations.append(f"targets에 유효하지 않은 값 '{target}' (유효값: {valid})")
 
-    for source in meta.get("sources") or []:
+    sources = meta.get("sources") or []
+    for source in sources:
         src_id = source.get("id") if isinstance(source, dict) else source
         if not src_id or not SOURCE_ID_RE.match(str(src_id)):
             violations.append(f"sources의 id가 src-NNN 형식이 아니다: {src_id!r}")
+
+    # 집필 규칙 3: 소스 2개 이상을 종합하는 게 원칙이고, 1개뿐이면 그 사실이
+    # 검수자에게 눈에 띄어야 한다 — note가 없으면 "종합을 빼먹은 건지 정말
+    # 소스가 하나뿐인 건지" 검수자가 구분할 수 없다.
+    if len(sources) == 1 and "note" not in meta:
+        violations.append("소스 1개인데 note 없음 (frontmatter에 note로 그 사실을 남겨라)")
 
     # 생성 직후에는 항상 false여야 한다 — true는 사람 검수를 이미 거쳤다는
     # 뜻이므로, 검수 전 산출물에 true가 있으면 그 자체가 사고(오기입/재사용)다.
@@ -58,7 +69,17 @@ def validate_doc(md_path: Path) -> list[str]:
         violations.append("본문에 '## ' 섹션이 1개 이상 있어야 한다")
 
     violations.extend(_find_real_names(post.content))
+    violations.extend(_find_cross_references(post.content))
 
+    return violations
+
+
+def _find_cross_references(body: str) -> list[str]:
+    """집필 규칙 5 위반(상호참조 어구) 검사."""
+    violations = []
+    for phrase in CROSS_REF_PHRASES:
+        if phrase in body:
+            violations.append(f"본문에 상호참조 어구가 있다: '{phrase}'")
     return violations
 
 
@@ -99,7 +120,14 @@ def main(argv: list[str]) -> int:
     exit_code = 0
     for arg in argv:
         path = Path(arg)
-        violations = validate_doc(path)
+        try:
+            violations = validate_doc(path)
+        except Exception as exc:  # noqa: BLE001 — CLI 최상위: 파일 하나가 깨져도
+            # 나머지 파일 검증은 계속돼야 하므로, 트레이스백 대신 사유만 보여주고
+            # 그 파일만 위반 처리한다.
+            exit_code = 1
+            print(f"[FAIL] {path}: {exc}")
+            continue
         if violations:
             exit_code = 1
             print(f"[FAIL] {path}")

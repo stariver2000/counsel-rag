@@ -23,6 +23,33 @@
 9. 문서의 기본 청자는 양육자다 — "아이가 ~할 때 (양육자가) 이렇게 한다" 화법을 쓴다. 당사자
    본인 화법("나는 ~할 때 이렇게 한다" 등)은 쓰지 않는다
 
+## frontmatter 스키마 (전 필드 필수, 이 형식 그대로)
+
+```yaml
+---
+id: <카테고리영문-주제영문 slug, 소문자-하이픈>
+title: <문서 제목>
+targets: [boy]            # boy | teen_male | common 중 (복수 가능)
+category: <택소노미의 카테고리명 그대로>
+age_range: [최소, 최대]    # 해당 연령. 전연령이면 [4, 19]
+is_crisis: false          # 위기 카테고리 문서만 true
+sources:
+  - {id: src-NNN, items: ["chNN" 또는 "문서명"]}
+reviewed: false           # 고정 — 검수자만 true로 바꾼다
+version: 1
+edges:                    # 해당될 때만. 없으면 필드 생략
+  - {to: <대상 slug>, type: escalates_to}       # 위기 연결 — "전문가 도움 신호" 섹션이 있으면 필수
+  - {to: <대상 slug>, type: differentiates_to}  # 증상 진입 문서의 갈래 연결
+  - {to: <대상 slug>, type: related}
+---
+```
+
+## edges 작성 규칙
+
+- `## 전문가 도움이 필요한 신호` 섹션을 쓴 문서는 반드시 위기 문서로 `escalates_to` 엣지를 건다
+- 증상 진입 문서는 각 갈래 문서로 `differentiates_to`를 건다
+- 참조 대상 slug는 이번 배치에서 함께 생성되는 문서 목록(컨트롤러 지급)에서만 고른다
+
 작성 후 `validate.py`를 실행해 통과를 확인하고, 위반이 있으면 스스로 고쳐라.
 
 ```bash

@@ -124,3 +124,26 @@ def test_rate_limit():
                            headers=headers).status_code == 200
     blocked = client.post("/v1/search", json={"query": "q"}, headers=headers)
     assert blocked.status_code == 429
+
+
+def test_rate_limit_under_concurrency():
+    # 왜: 락 없는 정리→확인→기록은 동시 요청에서 한도를 뚫는다(TOCTOU) —
+    #     스레드 20개가 동시에 쳐도 허용 수가 정확히 한도와 같아야 한다.
+    from concurrent.futures import ThreadPoolExecutor
+
+    from fastapi import HTTPException
+
+    from counsel_rag.api.security import RateLimiter
+
+    limiter = RateLimiter(per_minute=5)
+
+    def hit():
+        try:
+            limiter.check("k")
+            return 1
+        except HTTPException:
+            return 0
+
+    with ThreadPoolExecutor(max_workers=20) as pool:
+        results = list(pool.map(lambda _: hit(), range(20)))
+    assert sum(results) == 5

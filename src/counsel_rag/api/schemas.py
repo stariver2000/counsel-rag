@@ -13,7 +13,7 @@ class SearchRequest(BaseModel):
 
 class SituationRequest(BaseModel):
     situation: str
-    child_age: int
+    age: int          # 상담 대상 당사자의 나이 — 아동·청소년·(추후) 성인 공통
     target: str | None = None
 
 

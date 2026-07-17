@@ -85,7 +85,7 @@ def test_search_crisis_alert_present():
 def test_situation_search():
     client = make_client()
     res = client.post("/v1/search/situation",
-                      json={"situation": "동생을 때려요", "child_age": 7})
+                      json={"situation": "동생을 때려요", "age": 7})
     assert res.status_code == 200
 
 

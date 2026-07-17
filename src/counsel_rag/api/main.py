@@ -76,7 +76,7 @@ def create_app(
         _auth(request)
         targets = [req.target] if req.target else None
         res = search_service.search(req.situation, targets=targets,
-                                    age=req.child_age)
+                                    age=req.age)
         return _to_search_out(res)
 
     @app.get("/v1/documents/{slug}")

@@ -31,10 +31,10 @@ class CounselClient:
         return self._post("/v1/search", {"query": query, "target": target,
                                          "category": category, "age": age})
 
-    def search_situation(self, situation: str, child_age: int,
+    def search_situation(self, situation: str, age: int,
                          target: str | None = None) -> dict:
         return self._post("/v1/search/situation",
-                          {"situation": situation, "child_age": child_age,
+                          {"situation": situation, "age": age,
                            "target": target})
 
     def get_document(self, slug: str) -> dict:

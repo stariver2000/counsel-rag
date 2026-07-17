@@ -49,3 +49,30 @@ def test_chunk_text_has_context_header():
 
 def test_target_labels():
     assert TARGET_LABELS["teen_male"] == "청소년 남자"
+
+
+def test_underscore_md_files_are_skipped(tmp_path):
+    # 왜: '_*.md' skip 브랜치는 실픽스처(_taxonomy.yaml은 .md가 아님)로는 검증되지 않는다.
+    #     이 브랜치가 지워져도 기존 테스트가 통과하는 공백을 막는다.
+    (tmp_path / "_draft.md").write_text(
+        "---\nid: draft\ntitle: 초안\ntargets: [boy]\ncategory: 감정\n"
+        "is_crisis: false\nreviewed: false\nversion: 1\n---\n\n## 원칙\n내용\n"
+    )
+    assert load_knowledge_dir(tmp_path) == []
+
+
+def test_optional_fields_and_preamble_are_handled(tmp_path):
+    # 왜: age_range 없는 문서(age_min=None 계약), edges 없는 문서,
+    #     첫 헤딩 앞 잡문 버리기 — 셋 다 실픽스처에 없는 경로다.
+    (tmp_path / "doc.md").write_text(
+        "---\nid: no-age\ntitle: 나이없음\ntargets: [common]\ncategory: 감정\n"
+        "is_crisis: false\nreviewed: true\nversion: 1\n---\n\n"
+        "헤딩 앞 잡문은 버려져야 한다\n\n## 원칙\n본문\n"
+    )
+    docs = load_knowledge_dir(tmp_path)
+    doc = docs[0]
+    assert doc.age_min is None and doc.age_max is None
+    assert doc.edges == []
+    assert len(doc.sections) == 1
+    assert doc.sections[0].heading == "원칙"
+    assert "잡문" not in doc.sections[0].text

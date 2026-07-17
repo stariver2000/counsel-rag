@@ -1,0 +1,20 @@
+# GPU 가속 override — nvidia-container-toolkit이 설치된 머신 전용.
+# 왜 분리했나: 본 compose에 GPU 예약을 박으면 GPU 없는 머신(VPS 등)에서
+# 기동 자체가 실패한다. CPU 폴백은 코드가 지원하므로 compose도 선택제로 맞춘다.
+services:
+  kb-api:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+  kb-api-dev:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

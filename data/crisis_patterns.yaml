@@ -12,13 +12,13 @@ categories:
       - 죽어버리
       - 자살
       - 자해
-      - 손목을 긋
+      - 손목을 그
   abuse:
     headline: 학대 관련 신호가 감지되었습니다. 아래 전문기관에 연락하세요.
     hotlines:
       - "아동학대 신고 112"
       - "청소년 전화 1388"
-    guide_slug: crisis-self-harm
+    guide_slug: crisis-self-harm  # 학대 전용 가이드 문서는 M2에서 추가 후 교체
     patterns:
       - 때려서 멍
       - 학대

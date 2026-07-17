@@ -18,13 +18,23 @@ class CrisisAlert:
 
 class CrisisScanner:
     def __init__(self, patterns_path: Path):
+        # 로드 실패는 그대로 예외로 죽인다(fail-closed).
+        # 왜: 패턴 파일 없이 서버가 뜨면 위기 스캔 없는 서비스가 되는데,
+        #     그것이 기동 실패보다 훨씬 위험하다.
         raw = yaml.safe_load(patterns_path.read_text())
         self._categories: dict = raw["categories"]
 
     def scan(self, text: str) -> CrisisAlert | None:
+        # 공백을 제거하고 비교한다.
+        # 왜: "죽고 싶다"와 "죽고싶다"는 같은 위기 신호다 — 띄어쓰기 차이로
+        #     안전장치가 뚫리면 안 된다 (false negative가 가장 위험).
+        compact_text = text.replace(" ", "")
         for category, spec in self._categories.items():
+            # 카테고리는 yaml 순서대로 평가 — 먼저 매칭된 것 하나만 반환한다
+            # (self_harm이 최상단 = 최우선)
             for pattern in spec["patterns"]:
-                if pattern in text:
+                compact_pattern = pattern.replace(" ", "")
+                if compact_pattern in compact_text:
                     return CrisisAlert(
                         category=category,
                         headline=spec["headline"],

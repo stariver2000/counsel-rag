@@ -1,4 +1,4 @@
-# 개발·운영 공용 DB. kb-api 서비스는 Task 14에서 추가된다.
+# 개발·운영 공용 DB + kb-api 서버.
 services:
   db:
     image: pgvector/pgvector:pg16
@@ -10,5 +10,14 @@ services:
       - "5433:5432"   # 호스트의 다른 postgres와 충돌 방지를 위해 5433 사용
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  kb-api:
+    build: .
+    depends_on: [db]
+    environment:
+      COUNSEL_DATABASE_URL: postgresql://counsel:counsel@db:5432/counsel
+    ports:
+      - "8100:8100"
+    profiles: ["serve"]   # 개발 기본(compose up)에서는 db만 뜨게 분리
 volumes:
   pgdata:

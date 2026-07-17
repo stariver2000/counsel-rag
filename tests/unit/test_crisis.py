@@ -69,3 +69,16 @@ def test_malformed_patterns_file_fails_closed(tmp_path):
     bad.write_text("just a string, no categories key")
     with pytest.raises((KeyError, TypeError)):
         CrisisScanner(bad)
+
+
+def test_guide_returns_category_info():
+    # API 층(/v1/crisis/{category})이 텍스트 매칭 없이 바로 조회하는 경로.
+    guide = scanner.guide("self_harm")
+    assert guide is not None
+    assert guide["category"] == "self_harm"
+    assert guide["guide_slug"] == "crisis-self-harm"
+    assert any("1393" in h for h in guide["hotlines"])
+
+
+def test_guide_returns_none_for_unknown_category():
+    assert scanner.guide("unknown") is None

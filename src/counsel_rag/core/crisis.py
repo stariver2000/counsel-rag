@@ -42,3 +42,18 @@ class CrisisScanner:
                         guide_slug=spec["guide_slug"],
                     )
         return None
+
+    def guide(self, category: str) -> dict | None:
+        """카테고리 코드로 안내문을 직접 조회한다 (scan과 달리 텍스트 매칭 없음).
+        왜: API 층의 /v1/crisis/{category}는 이미 알려진 카테고리를 조회하므로
+            scan()의 텍스트 매칭 경로를 타지 않고 바로 데이터를 꺼내야 한다.
+        """
+        spec = self._categories.get(category)
+        if spec is None:
+            return None
+        return {
+            "category": category,
+            "headline": spec["headline"],
+            "hotlines": list(spec["hotlines"]),
+            "guide_slug": spec["guide_slug"],
+        }

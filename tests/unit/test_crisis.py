@@ -87,3 +87,11 @@ def test_guide_returns_category_info():
 
 def test_guide_returns_none_for_unknown_category():
     assert scanner.guide("unknown") is None
+
+
+def test_detects_indirect_expressions():
+    # 왜: 직접어("죽고 싶다") 없이도 위기를 드러내는 간접 표현 — 종합 배치에서
+    #     KYCI 근거로 채택된 4패턴을 회귀 고정한다.
+    assert scanner.scan("애가 내가 없어지면 다 나아질 거라고 말해요") is not None
+    assert scanner.scan("아무도 날 필요로 하지 않는대요") is not None
+    assert scanner.scan("사는 게 의미가 없다고 해요") is not None

@@ -16,6 +16,7 @@ dependencies = [
     # transformers 5.x는 slow tokenizer의 prepare_for_model을 제거해
     # FlagEmbedding 리랭커(compute_score)가 깨진다 — 4.x로 고정
     "transformers<5",
+    "pypdf>=4.0",
 ]
 
 [dependency-groups]

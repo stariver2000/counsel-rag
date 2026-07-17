@@ -1,4 +1,4 @@
-# 스테이지 조립소 — settings.search_stages 문자열("hybrid,rrf,rerank,threshold")을
+# 검색 파이프라인 조립소 (오프라인 데이터 파이프라인(pipeline/ 폴더)과 무관) — settings.search_stages 문자열("hybrid,rrf,rerank,threshold")을
 # 순서 그대로 스테이지 리스트로 만든다.
 # 왜: 검색 기법은 계속 바뀐다. 새 기법 = 스테이지 클래스 추가 + 여기 한 줄 등록.
 #     기존 코드는 건드리지 않는다 (설계문서 §7 모듈형 원칙).

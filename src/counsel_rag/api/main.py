@@ -18,7 +18,7 @@ def create_app(
     if search_service is None or documents_service is None or scanner is None:
         from counsel_rag.core.crisis import CrisisScanner
         from counsel_rag.core.documents import DocumentsService
-        from counsel_rag.core.pipeline import build_pipeline
+        from counsel_rag.core.search_pipeline import build_pipeline
         from counsel_rag.core.search import SearchService
         from counsel_rag.infra.assemble import build_embedder, build_reranker, build_store
 

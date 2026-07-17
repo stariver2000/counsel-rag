@@ -2,7 +2,7 @@
 # 왜: 스테이지는 "끼웠다 뺄 수 있는" 모듈(설계문서 §7)이다. 각각이 독립적으로
 #     옳아야 조합 실험(counsel-eval)이 의미를 갖는다.
 from counsel_rag.config import Settings
-from counsel_rag.core.pipeline import build_pipeline
+from counsel_rag.core.search_pipeline import build_pipeline
 from counsel_rag.core.ports import RetrievedChunk, SearchQuery
 from counsel_rag.core.stages.hybrid_retrieve import HybridRetrieve
 from counsel_rag.core.stages.rerank import Rerank

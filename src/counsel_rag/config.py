@@ -28,9 +28,10 @@ class Settings(BaseSettings):
     rerank_top_k: int = 5            # 최종 반환 상한
     rrf_k: int = 60                  # RRF 상수 (관례값 60)
     # 최종 점수 미달 시 insufficient_knowledge.
-    # 0.05인 이유: bge-reranker-v2-m3 실측에서 관련 청크는 0.2 이상,
-    # 무관 청크는 0.02 이하로 갈렸다 — 그 사이 값. 정밀 튜닝은 counsel-eval에서.
-    insufficient_threshold: float = 0.05
+    # 0.03인 이유(실측 2회): 샘플 지식에서 관련 0.2+/무관 0.015 이하,
+    # 실지식(20문서)에서 관련 하한 0.047 관측 — 0.05는 이 케이스를 오차단했다.
+    # 무관 상한(0.015)과 관련 하한(0.047) 사이 값. 정밀 튜닝은 counsel-eval에서.
+    insufficient_threshold: float = 0.03
 
     # --- 접근 통제 (설계문서 §9) ---
     api_keys: list[str] = []         # 비어 있으면 인증 비활성(개발 모드)

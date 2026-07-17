@@ -95,3 +95,10 @@ def test_detects_indirect_expressions():
     assert scanner.scan("애가 내가 없어지면 다 나아질 거라고 말해요") is not None
     assert scanner.scan("아무도 날 필요로 하지 않는대요") is not None
     assert scanner.scan("사는 게 의미가 없다고 해요") is not None
+
+
+def test_detects_relayed_speech_forms():
+    # 왜: 양육자는 아이의 말을 전달 화법으로 옮긴다 ("내가"→"자기가").
+    #     실검증에서 "자기가 없어지면 다 나아질 거래요"를 놓친 사례의 회귀 고정.
+    assert scanner.scan("아이가 자기가 없어지면 다 나아질 거래요") is not None
+    assert scanner.scan("자기가 없으면 다들 편할 거라고 하네요") is not None

@@ -16,12 +16,23 @@ services:
     depends_on: [db]
     environment:
       COUNSEL_DATABASE_URL: postgresql://counsel:counsel@db:5432/counsel
+      # 실지식 사용. knowledge/는 비공개 자산이라 이미지에 굽지 않고(.dockerignore)
+      # 런타임 마운트로만 공급한다
+      COUNSEL_KNOWLEDGE_DIR: knowledge
     ports:
       - "8100:8100"
     volumes:
       # 호스트의 HuggingFace 캐시 공유 — BGE-M3(2GB+) 재다운로드 방지,
       # 컨테이너에서 받은 리랭커 모델도 호스트 캐시에 영속된다
       - ${HF_CACHE:-~/.cache/huggingface}:/root/.cache/huggingface
+      - ./knowledge:/app/knowledge
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     profiles: ["serve"]   # 개발 기본(compose up)에서는 db만 뜨게 분리
 
   # 개발용 API — 호스트 코드를 마운트하고 자동 리로드.
@@ -32,15 +43,24 @@ services:
     depends_on: [db]
     environment:
       COUNSEL_DATABASE_URL: postgresql://counsel:counsel@db:5432/counsel
+      COUNSEL_KNOWLEDGE_DIR: knowledge          # 실지식 사용 (마운트로 공급)
     ports:
       - "8100:8100"
     volumes:
       - ${HF_CACHE:-~/.cache/huggingface}:/root/.cache/huggingface
       - ./src:/app/src                          # ★ 코드 수정 즉시 반영
-      - ./knowledge-sample:/app/knowledge-sample # 지식 문서 수정도 반영
+      - ./knowledge:/app/knowledge              # 실지식 (수정 즉시 반영, 인덱싱은 별도)
+      - ./knowledge-sample:/app/knowledge-sample # 형식 예시 (스모크용)
       - ./data:/app/data                        # 위기 패턴 수정도 반영
     command: uvicorn counsel_rag.api.main:app_factory --factory
       --host 0.0.0.0 --port 8100 --reload --reload-dir /app/src
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     profiles: ["dev"]
 volumes:
   pgdata:

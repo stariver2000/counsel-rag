@@ -52,3 +52,20 @@ def test_missing_patterns_file_fails_closed(tmp_path):
 
     with pytest.raises(FileNotFoundError):
         CrisisScanner(tmp_path / "no-such.yaml")
+
+
+def test_no_false_positive_on_benign_wrist_sentences():
+    # 왜: 공백 제거 매칭 + 짧은 어간의 조합은 "그네/그렇게/그림"과 충돌했었다.
+    # 위기 안내 오탐은 사용자 신뢰를 깎는다 — 무해 문장 회귀 고정.
+    assert scanner.scan("손목을 그네에서 다쳤어요") is None
+    assert scanner.scan("손목을 그렇게 심하게 다치지는 않았어요") is None
+    assert scanner.scan("손목을 그림으로 표현했어요") is None
+
+
+def test_malformed_patterns_file_fails_closed(tmp_path):
+    import pytest
+
+    bad = tmp_path / "bad.yaml"
+    bad.write_text("just a string, no categories key")
+    with pytest.raises((KeyError, TypeError)):
+        CrisisScanner(bad)

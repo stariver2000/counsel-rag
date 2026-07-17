@@ -43,11 +43,14 @@ def test_run_backup_rotates_old_backups_beyond_keep_limit(tmp_path):
         _env_file=None, corpus_dir=corpus_dir, backup_dir=backup_dir, backup_keep=2
     )
 
+    archive_paths = []
     for _ in range(3):
-        run_backup(settings)
+        archive_paths.append(run_backup(settings))
         # 파일명이 초 단위 타임스탬프라 같은 초에 실행되면 이름이 충돌한다 — 회전 검증을
         # 위해 각 실행 사이 시간을 확실히 벌려준다.
         time.sleep(1.1)
 
     remaining = sorted(backup_dir.glob("corpus-*.tar.gz"))
     assert len(remaining) == 2
+    # 회전이 오래된 것부터 지웠는지 확인 — 가장 최근 실행분은 반드시 남아야 한다.
+    assert archive_paths[-1] in remaining

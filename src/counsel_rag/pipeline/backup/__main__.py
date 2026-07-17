@@ -14,12 +14,23 @@ from counsel_rag.config import Settings
 def run_backup(settings: Settings) -> Path:
     settings.backup_dir.mkdir(parents=True, exist_ok=True)
 
+    # 주의: 초 단위 타임스탬프라 같은 초에 두 번 실행되면 파일명이 충돌한다
+    # (뒤 실행이 앞선 백업을 덮어쓴다) — 자동 스케줄 간격을 1초 이상으로 유지할 것.
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     archive_path = settings.backup_dir / f"corpus-{timestamp}.tar.gz"
-    with tarfile.open(archive_path, "w:gz") as tar:
-        # arcname을 corpus 디렉터리 이름으로 고정 — 절대경로가 아카이브 안에
-        # 그대로 박히면 복원 시 원래 경로가 달라도 헷갈리게 된다.
-        tar.add(settings.corpus_dir, arcname=settings.corpus_dir.name)
+    tmp_path = settings.backup_dir / f"corpus-{timestamp}.tar.gz.tmp"
+    # 왜 임시 이름에 먼저 쓰는가: tar 생성 도중 예외(디스크 풀 등)가 나면 쓰다 만
+    # 아카이브가 남는데, 그게 corpus-*.tar.gz 이름이면 회전 로직이 유효 세대로
+    # 오인해서 정상 백업을 밀어낼 수 있다 — 성공했을 때만 정식 이름으로 바꾼다.
+    try:
+        with tarfile.open(tmp_path, "w:gz") as tar:
+            # arcname을 corpus 디렉터리 이름으로 고정 — 절대경로가 아카이브 안에
+            # 그대로 박히면 복원 시 원래 경로가 달라도 헷갈리게 된다.
+            tar.add(settings.corpus_dir, arcname=settings.corpus_dir.name)
+        tmp_path.rename(archive_path)
+    except BaseException:
+        tmp_path.unlink(missing_ok=True)  # 실패 잔해 제거 — 회전 glob에 안 걸리게
+        raise
 
     _rotate_backups(settings.backup_dir, settings.backup_keep)
     print(f"backup created: {archive_path}")

@@ -1,0 +1,25 @@
+# 위기 신호 패턴 — 코드가 아닌 데이터 (설계문서 §8: 코드 배포 없이 갱신).
+# M2에서 KYCI 매뉴얼 기반으로 대폭 보강한다. 아래는 최소 시드.
+categories:
+  self_harm:
+    headline: 자해·자살 관련 신호가 감지되었습니다. 아래 전문기관에 즉시 연락하세요.
+    hotlines:
+      - "자살예방 상담전화 1393 (24시간)"
+      - "청소년 전화 1388"
+    guide_slug: crisis-self-harm
+    patterns:
+      - 죽고 싶
+      - 죽어버리
+      - 자살
+      - 자해
+      - 손목을 긋
+  abuse:
+    headline: 학대 관련 신호가 감지되었습니다. 아래 전문기관에 연락하세요.
+    hotlines:
+      - "아동학대 신고 112"
+      - "청소년 전화 1388"
+    guide_slug: crisis-self-harm
+    patterns:
+      - 때려서 멍
+      - 학대
+      - 맞아서 다쳤

@@ -27,7 +27,10 @@ class Settings(BaseSettings):
     retrieval_top_n: int = 20        # hybrid 단계에서 dense/sparse 각각 가져올 개수
     rerank_top_k: int = 5            # 최종 반환 상한
     rrf_k: int = 60                  # RRF 상수 (관례값 60)
-    insufficient_threshold: float = 0.35  # 최종 점수 미달 시 insufficient_knowledge
+    # 최종 점수 미달 시 insufficient_knowledge.
+    # 0.05인 이유: bge-reranker-v2-m3 실측에서 관련 청크는 0.2 이상,
+    # 무관 청크는 0.02 이하로 갈렸다 — 그 사이 값. 정밀 튜닝은 counsel-eval에서.
+    insufficient_threshold: float = 0.05
 
     # --- 접근 통제 (설계문서 §9) ---
     api_keys: list[str] = []         # 비어 있으면 인증 비활성(개발 모드)
